@@ -1,40 +1,35 @@
 package com.coding.imagesliderwithdotindicatorviewpager2
 
 import android.content.Intent
+import android.graphics.Rect
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.Toast
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import com.coding.imagesliderwithdotindicatorviewpager2.adapters.ImageAdapter
 import com.coding.imagesliderwithdotindicatorviewpager2.models.ImageItem
+import java.util.ArrayList
 import java.util.UUID
 
 class MainActivity : AppCompatActivity() {
-    private lateinit var viewpager2: ViewPager2
-    private lateinit var pageChangeListener: ViewPager2.OnPageChangeCallback
 
-    private val params = LinearLayout.LayoutParams(
-        LinearLayout.LayoutParams.WRAP_CONTENT,
-        LinearLayout.LayoutParams.WRAP_CONTENT
-    ).apply {
-        setMargins(8, 0, 8, 0)
-    }
+
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        viewpager2 = findViewById(R.id.viewpager2)
-
-//
 
         val exampleList = listOf(
             ImageItem(
                 UUID.randomUUID().toString(),
-                "https://fastly.picsum.photos/id/866/500/500.jpg?hmac=FOptChXpmOmfR5SpiL2pp74Yadf1T_bRhBF1wJZa9hg",
+                "https://plus.unsplash.com/premium_photo-1688645554172-d3aef5f837ce?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8bW91bnRhaW4lMjBldmVyZXN0fGVufDB8fDB8fHww",
                 "text 1",
                 "subtitle"
             ),
@@ -68,67 +63,37 @@ class MainActivity : AppCompatActivity() {
                 "text 6",
                 "subtitle"
             )
+
         )
-        //sendDataParcelable(exampleList)
+        setupRyclerView(exampleList)
 
 
-        val imageAdapter = ImageAdapter()
-        viewpager2.adapter = imageAdapter
-        imageAdapter.submitList(exampleList)
-
-        val slideDotLL = findViewById<LinearLayout>(R.id.slideDotLL)
-        val dotsImage = Array(exampleList.size) { ImageView(this) }
-
-        dotsImage.forEach {
-            it.setImageResource(
-                R.drawable.non_active_dot
-            )
-            slideDotLL.addView(it, params)
-        }
-
-        // default first dot selected
-        dotsImage[0].setImageResource(R.drawable.active_dot)
-
-        pageChangeListener = object : ViewPager2.OnPageChangeCallback() {
-            override fun onPageSelected(position: Int) {
-                dotsImage.mapIndexed { index, imageView ->
-                    if (position == index) {
-                        imageView.setImageResource(
-                            R.drawable.active_dot
-                        )
-                    } else {
-                        imageView.setImageResource(R.drawable.non_active_dot)
-                    }
-                }
-                super.onPageSelected(position)
-            }
-        }
-        viewpager2.registerOnPageChangeCallback(pageChangeListener)
     }
-    // Función que se ejecuta al hacer clic en el botón
-    fun onNextButtonClick(view: View) {
-        val currentItem = viewpager2.currentItem
-        val totalItems =  viewpager2.adapter?.itemCount
+    private fun setupRyclerView(exampleList: List<ImageItem>){
+        val recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
 
-        if (totalItems != null) {
-            if (currentItem < totalItems - 1) {
-                // Avanza a la siguiente diapositiva con animación
-                viewpager2.setCurrentItem(currentItem + 1, true)
-            } else {
-                // Muestra mensaje cuando está en la última diapositiva
-                Toast.makeText(this, "¡Has llegado al final!", Toast.LENGTH_SHORT).show()
-            }
+        // LayoutManager horizontal
+        val layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+        recyclerView.layoutManager = layoutManager
+
+        // Añadir espacio entre items (opcional)
+        recyclerView.addItemDecoration(HorizontalSpaceItemDecoration(16))
+        val adapter = ImageAdapter(exampleList)
+        recyclerView.adapter = adapter
+
+
+        recyclerView.clipToPadding = false
+    }
+    class HorizontalSpaceItemDecoration(private val space: Int) : RecyclerView.ItemDecoration() {
+        override fun getItemOffsets(
+            outRect: Rect,
+            view: View,
+            parent: RecyclerView,
+            state: RecyclerView.State
+        ) {
+            outRect.right = space
         }
     }
-    override fun onDestroy() {
-        super.onDestroy()
-        viewpager2.unregisterOnPageChangeCallback(pageChangeListener)
-    }
 
-/*    private fun sendDataParcelable(list: List<ImageItem>){
-        val intent = Intent(this, SecondActivity::class.java).apply {
-            putExtra("IMAGE_LIST", ArrayList(list)) // Convertimos a ArrayList
-        }
-        startActivity(intent)
-    }*/
+
 }

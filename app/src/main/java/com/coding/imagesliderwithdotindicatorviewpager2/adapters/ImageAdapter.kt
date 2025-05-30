@@ -8,47 +8,41 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.bumptech.glide.request.RequestOptions
 import com.coding.imagesliderwithdotindicatorviewpager2.R
 import com.coding.imagesliderwithdotindicatorviewpager2.models.ImageItem
 
-class ImageAdapter : ListAdapter<ImageItem, ImageAdapter.ViewHolder>(DiffCallback()) {
+class ImageAdapter  (private val items: List<ImageItem>) : RecyclerView.Adapter<ImageAdapter.ItemViewHolder>() {
 
-    class DiffCallback : DiffUtil.ItemCallback<ImageItem>() {
-        override fun areItemsTheSame(oldItem: ImageItem, newItem: ImageItem): Boolean {
-            return oldItem.id == newItem.id
-        }
-
-        override fun areContentsTheSame(oldItem: ImageItem, newItem: ImageItem): Boolean {
-            return oldItem == newItem
-        }
+    // ViewHolder class
+    class ItemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val imageView: ImageView = itemView.findViewById(R.id.item_image)
+        val titleView: TextView = itemView.findViewById(R.id.item_title)
+        val subtitleView: TextView = itemView.findViewById(R.id.item_subtitle)
     }
 
-    class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val imageView = itemView.findViewById<ImageView>(R.id.imageView)
-        private val textTitle = itemView.findViewById<TextView>(R.id.textView)    // TextView superior
-        private val textDescription = itemView.findViewById<TextView>(R.id.textView2) // TextView inferior
-
-        fun bindData(item: ImageItem) {
-            // Cargar imagen
-            Glide.with(itemView)
-                .load(item.url)
-                .into(imageView)
-
-            // Asignar textos
-            textTitle.text = item.title
-            textDescription.text = item.description
-        }
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
+        val view = LayoutInflater.from(parent.context)
+            .inflate(R.layout.image_item_layout, parent, false)
+        return ItemViewHolder(view)
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        return ViewHolder(
-            LayoutInflater.from(parent.context)
-                .inflate(R.layout.image_item_layout, parent, false)
-        )
+    override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
+        val currentItem = items[position]
+
+        Glide.with(holder.imageView.context)
+            .load(currentItem.url) // o currentItem.imageUrl si usas URLs
+            .centerCrop()
+            .apply(RequestOptions.bitmapTransform(RoundedCorners(20)))
+            .placeholder(R.drawable.ic_launcher_background)
+            .into(holder.imageView)
+
+        holder.titleView.text = currentItem.title
+        holder.subtitleView.text = currentItem.description
     }
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val imageItem = getItem(position)
-        holder.bindData(imageItem)
+    override fun getItemCount(): Int {
+        return items.size
     }
 }
