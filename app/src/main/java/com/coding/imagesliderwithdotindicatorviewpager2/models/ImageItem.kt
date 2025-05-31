@@ -1,7 +1,5 @@
 package com.coding.imagesliderwithdotindicatorviewpager2.models
 
-import android.os.Parcel
-import android.os.Parcelable
 import java.io.Serializable
 
 data class ImageItem(
@@ -9,4 +7,4 @@ data class ImageItem(
     val url: String,
     val title: String,
     val description: String
-) :Serializable
+) : Serializable
