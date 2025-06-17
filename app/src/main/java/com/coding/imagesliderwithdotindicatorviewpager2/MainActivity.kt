@@ -3,11 +3,9 @@ package com.coding.imagesliderwithdotindicatorviewpager2
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.coding.imagesliderwithdotindicatorviewpager2.adapters.ImageAdapter
+import androidx.recyclerview.widget.RecyclerView
+import com.coding.imagesliderwithdotindicatorviewpager2.adapters.HourlyWeatherAdapter
 import com.coding.imagesliderwithdotindicatorviewpager2.databinding.ActivityMainBinding
-import com.coding.imagesliderwithdotindicatorviewpager2.models.Category
-import com.coding.imagesliderwithdotindicatorviewpager2.models.ImageItem
-import com.coding.imagesliderwithdotindicatorviewpager2.models.VideoObjectResponse
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
@@ -18,100 +16,37 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // Datos de ejemplo
+        val recyclerView = findViewById<RecyclerView>(R.id.hourlyRecyclerView)
+        recyclerView.layoutManager = LinearLayoutManager(this) // Vertical por defecto
 
-        val categorylist = listOf(
-            Category(
-                "pepe",
-                "Descrripcion de Categoria Pepe",
-                "text 1"
+        // Datos de ejemplo con el mismo icono para todos
+        val hourlyData = listOf(
+            HourlyWeatherAdapter.HourlyWeather(
+                "Ahora",
+                "Parcialmente lluvioso",
+                "Probabilidad de lluvia: 25%",
+                "24°",
+                R.drawable.ic_launcher_background
             ),
-            Category(
-                "pepe",
-                "Des cat pepe 2",
-                "text 1",
+            HourlyWeatherAdapter.HourlyWeather(
+                "19:00",
+                "Lluvia",
+                "Probabilidad de lluvia: 60%",
+                "24°",
+                R.drawable.baseline_grain_24
             ),
-            Category(
-                "paco",
-                "Paco Description",
-                "Paco 1",
-
-                ),
-            Category(
-                "pepe",
-                "pajsdjdasjkdsajk;ldasjk;adsjk;dasja",
-                "Pepe",
-
-                ),
-            Category(
-                "paco",
-                "des pacoooo",
-                "text 5",
-
-                ),
-            Category(
-                "otro",
-                "des otro",
-                "Otro",
-
-                )
-
+            HourlyWeatherAdapter.HourlyWeather(
+                "20:00h",
+                "Mayormente nublado",
+                "",
+                "24°",
+                R.drawable.baseline_sunny_24
+            ),
+            // Resto de items con el mismo icono...
         )
-        val videosList = listOf(
-            VideoObjectResponse(
-                "pepe",
-                "https://fastly.picsum.photos/id/778/500/500.jpg?hmac=jZLZ6WV_OGRxAIIYPk7vGRabcAGAILzxVxhqSH9uLas"
-            ),
-            VideoObjectResponse(
-                "pepe",
-                "https://fastly.picsum.photos/id/95/500/500.jpg?hmac=0aldBQ7cQN5D_qyamlSP5j51o-Og4gRxSq4AYvnKk2U"
-            ),
-            VideoObjectResponse(
-                "otro",
-                "https://fastly.picsum.photos/id/798/500/500.jpg?hmac=Bmzk6g3m8sUiEVHfJWBscr2DUg8Vd2QhN7igHBXLLfo"
-            ),
-            VideoObjectResponse(
-                "otro",
-                "https://fastly.picsum.photos/id/798/500/500.jpg?hmac=Bmzk6g3m8sUiEVHfJWBscr2DUg8Vd2QhN7igHBXLLfo"
-            ),
-            VideoObjectResponse(
-                "paco",
-                "https://fastly.picsum.photos/id/320/500/500.jpg?hmac=2iE7TIF9kIqQOHrIUPOJx2wP1CJewQIZBeMLIRrm74s"
-            ),
-        )
-        val list: List<ImageItem> = combineLists(categorylist,videosList)
-        setupRyclerView(list,videosList)
 
-
+        recyclerView.adapter = HourlyWeatherAdapter(hourlyData)
     }
-
-    private fun setupRyclerView(exampleList: List<ImageItem>,videoList: List<VideoObjectResponse>,) {
-
-
-        // LayoutManager horizontal
-        val layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
-        binding.recyclerView.layoutManager = layoutManager
-
-
-        val adapter = ImageAdapter(exampleList,videoList)
-        binding.recyclerView.adapter = adapter
-
-    }
-
-    fun combineLists(categories: List<Category>, videos: List<VideoObjectResponse>): List<ImageItem> {
-        // Agrupar los videos por ID para un acceso más eficiente
-        val videosByCategoryId = videos.groupBy { it.id }
-        // Procesar las categorías
-        return categories.distinctBy { it.id }.map { category ->
-            val videoForCategory = videosByCategoryId[category.id]?.firstOrNull()
-
-            ImageItem(
-                id = category.id,
-                url = videoForCategory?.url ?: "", // Usar URL del video o cadena vacía si no hay
-                title = category.title,
-                description = category.description
-            )
-        }
-    }
-
 
 }
