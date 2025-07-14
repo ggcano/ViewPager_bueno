@@ -38,25 +38,41 @@ class MainActivity : AppCompatActivity() {
             // Configurar RecyclerView con datos reales
             val hourlyData = listOf(
                 HourlyWeatherAdapter.HourlyWeather(
-                    "Ahora",
-                    "Parcialmente lluvioso",
-                    "Probabilidad de lluvia: 25%",
-                    "24°",
-                    R.drawable.ic_launcher_background
+                    hour = "Ahora",
+                    condition = "Parcialmente lluvioso",
+                    id = 1,
+                    rainProbability = "Probabilidad de lluvia: 25%",
+                    likes = "10",
+                    iconRes = R.drawable.ic_launcher_background,
+                    isLiked = false // Estado inicial
                 ),
                 HourlyWeatherAdapter.HourlyWeather(
-                    "19:00",
-                    "Lluvia",
-                    "Probabilidad de lluvia: 60%",
-                    "24°",
-                    R.drawable.baseline_grain_24
+                    hour = "19:00",
+                    condition = "Lluvia",
+                    id = 3,
+                    rainProbability = "Probabilidad de lluvia: 60%",
+                    likes = "12",
+                    iconRes = R.drawable.ic_launcher_background,
+                    isLiked = false
                 ),
                 HourlyWeatherAdapter.HourlyWeather(
-                    "20:00h",
-                    "Mayormente nublado",
-                    "",
-                    "24°",
-                    R.drawable.baseline_sunny_24
+                    hour = "19:00",
+                    condition = "Lluvia",
+                    id = 4,
+                    rainProbability = "Probabilidad de lluvia: 60%",
+                    likes = "14",
+                    iconRes = R.drawable.ic_launcher_background,
+                    isLiked = false
+                ),
+                    HourlyWeatherAdapter.HourlyWeather(
+                        hour = "19:00",
+                        condition = "Lluvia",
+                        id = 5,
+                        rainProbability = "Probabilidad de lluvia: 60%",
+                        likes = "0",
+                        iconRes = R.drawable.ic_launcher_background,
+                        isLiked = false
+
                 )
 
                 // ... resto de tus datos ...

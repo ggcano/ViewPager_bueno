@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.coding.imagesliderwithdotindicatorviewpager2.R
 
 class HourlyWeatherAdapter(
-    private val hourlyItems: List<HourlyWeather>
+    private var hourlyItems: List<HourlyWeather>
 ) : RecyclerView.Adapter<HourlyWeatherAdapter.ViewHolder>() {
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -31,16 +31,43 @@ class HourlyWeatherAdapter(
 
         holder.hourText.text = item.hour
         holder.conditionText.text = item.condition
-        holder.tempText.text = item.temperature
-
-        // Configurar icono (todos usan el mismo)
+        holder.tempText.text = item.likes
         holder.weatherIcon.setImageResource(item.iconRes)
 
-        if(item.rainProbability.isEmpty()) {
+        // Configurar el icono de like según el estado
+        val likeIconRes = if (item.isLiked) {
+            R.drawable.baseline_sunny_24 // Icono cuando está likeado
+        } else {
+            R.drawable.baseline_grain_24 // Icono normal
+        }
+        holder.weatherIcon.setImageResource(likeIconRes)
+
+        if (item.rainProbability.isEmpty()) {
             holder.rainText.visibility = View.GONE
         } else {
             holder.rainText.visibility = View.VISIBLE
             holder.rainText.text = item.rainProbability
+        }
+
+        // Configurar el clic en iconRest
+        holder.weatherIcon.setOnClickListener {
+            val currentLikes = item.likes.toIntOrNull() ?: 0
+            val newLikes = if (item.isLiked) {
+                currentLikes - 1
+            } else {
+                currentLikes + 1
+            }
+
+            // Actualizar la lista
+            val newList = hourlyItems.toMutableList()
+            newList[position] = item.copy(
+                likes = newLikes.toString(),
+                isLiked = !item.isLiked
+            )
+            hourlyItems = newList
+
+            // Notificar el cambio
+            notifyItemChanged(position)
         }
     }
 
@@ -49,8 +76,10 @@ class HourlyWeatherAdapter(
     data class HourlyWeather(
         val hour: String,
         val condition: String,
+        val id: Long,
         val rainProbability: String,
-        val temperature: String,
-        val iconRes: Int // Nuevo campo para el recurso del icono
+        val likes: String,
+        val iconRes: Int,
+        var isLiked: Boolean = false // Nuevo campo para estado de like
     )
 }
