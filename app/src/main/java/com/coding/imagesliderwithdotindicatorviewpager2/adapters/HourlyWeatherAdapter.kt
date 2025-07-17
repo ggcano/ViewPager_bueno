@@ -1,5 +1,6 @@
 package com.coding.imagesliderwithdotindicatorviewpager2.adapters
 
+import android.app.AlertDialog
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,6 +19,7 @@ class HourlyWeatherAdapter(
         val rainText: TextView = itemView.findViewById(R.id.rainProbability)
         val tempText: TextView = itemView.findViewById(R.id.hourTemp)
         val weatherIcon: ImageView = itemView.findViewById(R.id.weatherIcon)
+        val commentText: TextView = itemView.findViewById(R.id.commentText)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -28,17 +30,21 @@ class HourlyWeatherAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = hourlyItems[position]
+        val context = holder.itemView.context
 
         holder.hourText.text = item.hour
         holder.conditionText.text = item.condition
         holder.tempText.text = item.likes
         holder.weatherIcon.setImageResource(item.iconRes)
 
+        // Configurar visibilidad del comentario
+        holder.commentText.visibility = if (item.showComment) View.VISIBLE else View.GONE
+
         // Configurar el icono de like según el estado
         val likeIconRes = if (item.isLiked) {
-            R.drawable.baseline_sunny_24 // Icono cuando está likeado
+            R.drawable.baseline_sunny_24
         } else {
-            R.drawable.baseline_grain_24 // Icono normal
+            R.drawable.baseline_grain_24
         }
         holder.weatherIcon.setImageResource(likeIconRes)
 
@@ -58,16 +64,42 @@ class HourlyWeatherAdapter(
                 currentLikes + 1
             }
 
-            // Actualizar la lista
             val newList = hourlyItems.toMutableList()
             newList[position] = item.copy(
                 likes = newLikes.toString(),
                 isLiked = !item.isLiked
             )
             hourlyItems = newList
-
-            // Notificar el cambio
             notifyItemChanged(position)
+        }
+
+        // Configurar el clic en hourText para mostrar/ocultar comentario
+        holder.hourText.setOnClickListener {
+            val newList = hourlyItems.toMutableList()
+            newList[position] = item.copy(
+                showComment = !item.showComment
+            )
+            hourlyItems = newList
+            notifyItemChanged(position)
+        }
+
+        // Configurar el clic largo en el comentario para eliminarlo
+        holder.commentText.setOnLongClickListener {
+            AlertDialog.Builder(context)
+                .setTitle("Eliminar comentario")
+                .setMessage("¿Quieres eliminar este comentario?")
+                .setPositiveButton("Eliminar") { _, _ ->
+                    // Actualizar la lista para ocultar el comentario
+                    val newList = hourlyItems.toMutableList()
+                    newList[position] = item.copy(
+                        showComment = false
+                    )
+                    hourlyItems = newList
+                    notifyItemChanged(position)
+                }
+                .setNegativeButton("Cancelar", null)
+                .show()
+            true
         }
     }
 
@@ -80,6 +112,7 @@ class HourlyWeatherAdapter(
         val rainProbability: String,
         val likes: String,
         val iconRes: Int,
-        var isLiked: Boolean = false // Nuevo campo para estado de like
+        var isLiked: Boolean = false,
+        var showComment: Boolean = false
     )
 }

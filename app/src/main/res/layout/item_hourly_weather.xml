@@ -66,4 +66,19 @@
         app:layout_constraintStart_toEndOf="@id/weatherIcon"
         app:layout_constraintTop_toBottomOf="@id/rainProbability" />
 
+    <!-- Comentario (inicialmente invisible) -->
+    <TextView
+        android:id="@+id/commentText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:padding="8dp"
+        android:background="#F0F0F0"
+        android:text="Hola"
+        android:textColor="#333333"
+        android:visibility="gone"
+        android:clickable="true"
+        android:focusable="true"
+        app:layout_constraintTop_toBottomOf="@id/hourTemp" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
